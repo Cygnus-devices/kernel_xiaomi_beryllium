@@ -10,7 +10,7 @@ mkdir -p $HOME/TC
 git clone https://github.com/Dhruvgera/AnyKernel3.git 
 git clone git://github.com/RaphielGang/aarch64-linux-gnu-8.x $HOME/TC/aarch64-linux-gnu-8.x --depth=1
 git clone git://github.com/VRanger/dragontc 
- 
+git clone -q https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/ "$HOME"/TC/gcc32 --depth=1 
 function check_toolchain() {
  
     export TC="$(find ${TOOLCHAIN}/bin -type f -name *-gcc)";
@@ -71,6 +71,7 @@ export OUTDIR="${KERNELDIR}/out";
 export ANYKERNEL="${KERNELDIR}/AnyKernel3";
 export AROMA="${KERNELDIR}/aroma/";
 export ARCH="arm64";
+export CROSS_COMPILE_ARM32="$HOME/TC/gcc32/bin/arm-linux-androideabi-"
 export SUBARCH="arm64";
 export KBUILD_BUILD_USER="Dhruv"
 export KBUILD_BUILD_HOST="TeamRockstar"
@@ -180,7 +181,7 @@ make -j$(nproc --all) O=out \
 	              KCFLAGS="$KCFLAGS" | tee build-log.txt ;
 
 else
-  ${MAKE} -j${JOBS} \ ARCH=arm64 \ CC=$HOME/$PWD/dragontc/bin/clang \ CLANG_TRIPLE=aarch64-linux-gnu- \ CROSS_COMPILE="$HOME/TC/aarch64-linux-gnu-8.x/bin/aarch64-linux-gnu-";
+  ${MAKE} -j${JOBS} \ ARCH=arm64 \ CC=$PWD/dragontc/bin/clang \ CLANG_TRIPLE=aarch64-linux-gnu- \ CROSS_COMPILE="$HOME/TC/aarch64-linux-gnu-8.x/bin/aarch64-linux-gnu-";
 
 fi
  
