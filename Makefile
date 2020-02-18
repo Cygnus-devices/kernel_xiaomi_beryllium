@@ -1852,4 +1852,3 @@ FORCE:
 # information in a variable so we can use it in if_changed and friends.
 .PHONY: $(PHONY)
 KBUILD_CFLAGS  += $(call cc-disable-warning, misleading-indentation)
-KBUILD_CFLAGS  += $(call cc-option,-Ofast)
