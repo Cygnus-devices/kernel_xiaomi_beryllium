@@ -1,4 +1,4 @@
-/* Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -879,9 +879,22 @@ irqreturn_t mhi_intvec_threaded_handlr(int irq_number, void *dev);
 irqreturn_t mhi_intvec_handlr(int irq_number, void *dev);
 void mhi_ev_task(unsigned long data);
 
-#define MHI_ASSERT(cond, fmt, ...) do { \
+#ifdef CONFIG_MHI_DEBUG
+
+#define MHI_ASSERT(cond, msg) do { \
 	if (cond) \
-		panic(fmt); \
+		panic(msg); \
 } while (0)
+
+#else
+
+#define MHI_ASSERT(cond, msg) do { \
+	if (cond) { \
+		MHI_ERR(msg); \
+		WARN_ON(cond); \
+	} \
+} while (0)
+
+#endif
 
 #endif /* _MHI_INT_H */
