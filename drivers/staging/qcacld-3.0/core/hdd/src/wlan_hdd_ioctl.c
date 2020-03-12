@@ -1400,10 +1400,12 @@ hdd_parse_channellist(const uint8_t *pValue, uint8_t *pChannelList,
 		inPtr = strpbrk(inPtr, " ");
 		/* no channel list after the number of channels argument */
 		if (NULL == inPtr) {
-			if ((j != 0) && (j == *pNumChannels))
+			if (0 != j) {
+				*pNumChannels = j;
 				return 0;
-			else
-				goto cnt_mismatch;
+			} else {
+				return -EINVAL;
+			}
 		}
 
 		/* remove empty space */
@@ -1415,10 +1417,12 @@ hdd_parse_channellist(const uint8_t *pValue, uint8_t *pChannelList,
 		 * argument and spaces
 		 */
 		if ('\0' == *inPtr) {
-			if ((j != 0) && (j == *pNumChannels))
+			if (0 != j) {
+				*pNumChannels = j;
 				return 0;
-			else
-				goto cnt_mismatch;
+			} else {
+				return -EINVAL;
+			}
 		}
 
 		v = sscanf(inPtr, "%31s ", buf);
@@ -1438,11 +1442,6 @@ hdd_parse_channellist(const uint8_t *pValue, uint8_t *pChannelList,
 	}
 
 	return 0;
-
-cnt_mismatch:
-	hdd_debug("Mismatch in ch cnt: %d and num of ch: %d", *pNumChannels, j);
-	*pNumChannels = 0;
-	return -EINVAL;
 }
 
 /**
@@ -4376,7 +4375,7 @@ static int drv_cmd_get_scan_home_away_time(struct hdd_adapter *adapter,
 {
 	int ret = 0;
 	uint16_t val;
-	char extra[32] = {0};
+	char extra[32];
 	uint8_t len = 0;
 	QDF_STATUS status;
 
@@ -4388,6 +4387,7 @@ static int drv_cmd_get_scan_home_away_time(struct hdd_adapter *adapter,
 
 	hdd_debug("vdev_id: %u, scan home away time: %u",
 		  adapter->session_id, val);
+
 	len = scnprintf(extra, sizeof(extra), "%s %d", command, val);
 	len = QDF_MIN(priv_data->total_len, len + 1);
 
