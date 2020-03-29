@@ -41,8 +41,8 @@ function sendlog {
  
 function trimlog {
     sendlog "$1"
-    grep -iE 'crash|error|fail|fatal' "$1" &> "trimmed$1"
-    sendlog "trimmed_$1"
+    grep -iE 'crash|error|fail|fatal' "$1" &> "trimmed.txt"
+    curl -F chat_id="$CHAT_ID" -F document=@"trimmed.txt" -F caption="Woah, I trimmed them for you" https://api.telegram.org/bot$BOT_API_KEY/sendDocument
 }
  
 function transfer() {
@@ -51,7 +51,6 @@ function transfer() {
     printf '\n';
     echo -e "Download ${zipname} at ${url}";
     curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendMessage -d text="$url" -d chat_id=$CHAT_ID
-    curl -F chat_id="$CHAT_ID" -F document=@"${ZIP_DIR}/$ZIPNAME" https://api.telegram.org/bot$BOT_API_KEY/sendDocument
 }
  
 if [[ -z ${KERNELDIR} ]]; then
@@ -102,7 +101,7 @@ export LLVM_DIS=$HOME/clang/bin/llvm-dis
 
 fi
  
-export MAKE_TYPE="Treble"
+export MAKE_TYPE="AOSP"
  
 if [[ -z "${JOBS}" ]]; then
     export JOBS="$(nproc --all)";
@@ -139,7 +138,7 @@ MAKE_STATEMENT=make
 if [[ "$*" == *"-no-menuconfig"* ]]
 then
   NO_MENUCONFIG=1
-  MAKE_STATEMENT="$MAKE_STATEMENT KCONFIG_CONFIG=./arch/arm64/configs/santoni_defconfig"
+  MAKE_STATEMENT="$MAKE_STATEMENT KCONFIG_CONFIG=./arch/arm64/configs/beryllium_defconfig"
 fi
  
 if [[ "$@" =~ "mrproper" ]]; then
@@ -199,6 +198,7 @@ echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.";
 # ================
 if [[ ! -f "${IMAGE}" ]]; then
     echo -e "Build failed :P";
+    curl -F chat_id="$CHAT_ID" -F document=@"build-log.txt" -F caption="Enjoy logs" https://api.telegram.org/bot$BOT_API_KEY/sendDocument
     trimlog build-log.txt
     success=false;
     exit 1;
@@ -241,7 +241,7 @@ curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendMessage -d text="
 
 🛠️ Make-Type  : $MAKE_TYPE
 
-🗒️ Buld-Type  : TEST
+🗒️ Build-Type  : TEST
 
 ⌚ Build-Time : $time
 
