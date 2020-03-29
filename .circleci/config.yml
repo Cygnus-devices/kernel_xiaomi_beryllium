@@ -10,6 +10,10 @@ jobs:
            git clone --depth=1 https://github.com/Dhruvgera/RockstarKernel_beryllium.git -b rebase2
            cd RockstarKernel_beryllium
            bash unified.sh 
+           bash unified.sh -clean
+           sed -i "s/qcom,mdss-dsi-panel-framerate = <60>/qcom,mdss-dsi-panel-framerate = <70>/g" $PWD/arch/arm64/boot/dts/qcom/dsi-panel-ebbg-fhd-ft8719-video.dtsi
+           sed -i "s/qcom,mdss-dsi-panel-framerate = <60>/qcom,mdss-dsi-panel-framerate = <70>/g" $PWD/arch/arm64/boot/dts/qcom/dsi-panel-tianma-fhd-nt36672a-video.dtsi
+           bash unified.sh
 workflows:
   version: 2.1
   cooking:
